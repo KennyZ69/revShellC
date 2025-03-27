@@ -88,9 +88,10 @@ void execute_comms(int sock) {
 		}
 
 		// now execute the received command
-		FILE *f = popen(buf, "r"); // using the buffer as a command
+		FILE *f = popen(strcat(buf, " 2>&1"), "r"); // using the buffer as a command, and also redirecting stderr into this
 		if (f == NULL) {
-			perror("Error executing command\n");
+			// perror("Error executing command\n");
+			send(sock, NotFoundErr, strlen(NotFoundErr), 0);
 			continue;
 		}
 
@@ -102,6 +103,6 @@ void execute_comms(int sock) {
 
 		pclose(f);
 
-		send(sock, "EOF!\n", 6, 0);
+		// send(sock, "EOF!\n", 5, 0);
 	}
 }

